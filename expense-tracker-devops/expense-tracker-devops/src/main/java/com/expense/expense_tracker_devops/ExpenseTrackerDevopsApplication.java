@@ -2,19 +2,19 @@ package com.expense.expense_tracker_devops;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
-@RestController
+@Controller
 public class ExpenseTrackerDevopsApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ExpenseTrackerDevopsApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ExpenseTrackerDevopsApplication.class, args);
+    }
 
-	@GetMapping("/")
-	public String home() {
-		return "Expense Tracker DevOps App Running Successfully!";
-	}
+    @GetMapping("/")
+    public String home() {
+        return "index";
+    }
 }
