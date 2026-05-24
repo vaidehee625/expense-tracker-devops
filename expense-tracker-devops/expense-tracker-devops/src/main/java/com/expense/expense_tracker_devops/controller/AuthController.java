@@ -2,6 +2,8 @@ package com.expense.expense_tracker_devops.controller;
 
 import com.expense.expense_tracker_devops.model.User;
 import com.expense.expense_tracker_devops.repository.UserRepository;
+import com.expense.expense_tracker_devops.security.JwtUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,6 +20,9 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     private BCryptPasswordEncoder passwordEncoder =
             new BCryptPasswordEncoder();
@@ -40,14 +45,21 @@ public class AuthController {
 
         userRepository.save(user);
 
-        return ResponseEntity.ok("User registered successfully");
+        return ResponseEntity.ok(
+                "User registered successfully"
+        );
+
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User loginUser) {
+    public ResponseEntity<?> login(
+            @RequestBody User loginUser
+    ) {
 
         Optional<User> user =
-                userRepository.findByEmail(loginUser.getEmail());
+                userRepository.findByEmail(
+                        loginUser.getEmail()
+                );
 
         if(user.isEmpty()) {
 
@@ -67,11 +79,28 @@ public class AuthController {
                     .body("Invalid password");
         }
 
-        Map<String, String> response = new HashMap<>();
+        String token =
+                jwtUtil.generateToken(
+                        user.get().getEmail()
+                );
 
-        response.put("message", "Login successful");
+        Map<String, String> response =
+                new HashMap<>();
 
-        response.put("username", user.get().getUsername());
+        response.put(
+                "message",
+                "Login successful"
+        );
+
+        response.put(
+                "token",
+                token
+        );
+
+        response.put(
+                "username",
+                user.get().getUsername()
+        );
 
         return ResponseEntity.ok(response);
 
