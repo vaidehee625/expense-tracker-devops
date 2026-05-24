@@ -1,57 +1,230 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense Tracker DevOps</title>
 
     <style>
+
         body{
-            font-family: Arial;
-            background:#f4f4f4;
-            text-align:center;
-            padding-top:100px;
+            font-family: Arial, sans-serif;
+            background: #f4f7fc;
+            margin:0;
+            padding:0;
         }
 
         .container{
+            width: 90%;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        .title{
+            text-align:center;
+            color:#1e3c72;
+            margin-bottom:30px;
+        }
+
+        .card{
             background:white;
-            width:500px;
-            margin:auto;
-            padding:40px;
-            border-radius:10px;
-            box-shadow:0 0 10px rgba(0,0,0,0.2);
+            padding:20px;
+            border-radius:12px;
+            box-shadow:0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom:20px;
         }
 
-        h1{
-            color:#2c3e50;
+        input{
+            width:100%;
+            padding:12px;
+            margin-top:10px;
+            border-radius:8px;
+            border:1px solid #ccc;
+            box-sizing:border-box;
         }
 
-        p{
-            font-size:20px;
-            color:#555;
+        button{
+            background:#1e3c72;
+            color:white;
+            padding:12px 20px;
+            border:none;
+            border-radius:8px;
+            margin-top:15px;
+            cursor:pointer;
         }
 
-        .status{
-            color:green;
+        button:hover{
+            background:#16325c;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+        }
+
+        th, td{
+            padding:12px;
+            border-bottom:1px solid #ddd;
+            text-align:center;
+        }
+
+        th{
+            background:#1e3c72;
+            color:white;
+        }
+
+        .delete-btn{
+            background:red;
+        }
+
+        .total-card{
+            text-align:center;
+            font-size:24px;
             font-weight:bold;
+            color:green;
         }
+
     </style>
 
 </head>
-
 <body>
 
 <div class="container">
 
-    <h1>Expense Tracker DevOps Project</h1>
+    <h1 class="title">Expense Tracker DevOps Project</h1>
 
-    <p class="status">
-        Application Successfully Deployed on AWS EC2
-    </p>
+    <div class="card">
 
-    <p>
-        CI/CD Pipeline using Jenkins + Docker + GitHub
-    </p>
+        <h2>Add Expense</h2>
+
+        <input type="text" id="title" placeholder="Expense Title">
+
+        <input type="number" id="amount" placeholder="Amount">
+
+        <input type="text" id="category" placeholder="Category">
+
+        <input type="date" id="date">
+
+        <button onclick="addExpense()">Add Expense</button>
+
+    </div>
+
+    <div class="card total-card">
+        Total Expense: ₹ <span id="totalAmount">0</span>
+    </div>
+
+    <div class="card">
+
+        <h2>Expense List</h2>
+
+        <table>
+
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+
+            <tbody id="expenseTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
 
 </div>
+
+<script>
+
+    const API_URL = "/api/expenses";
+
+    async function fetchExpenses(){
+
+        const response = await fetch(API_URL);
+
+        const expenses = await response.json();
+
+        const table = document.getElementById("expenseTable");
+
+        table.innerHTML = "";
+
+        let total = 0;
+
+        expenses.forEach(expense => {
+
+            total += expense.amount;
+
+            table.innerHTML += `
+                <tr>
+                    <td>${expense.title}</td>
+                    <td>₹ ${expense.amount}</td>
+                    <td>${expense.category}</td>
+                    <td>${expense.date}</td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteExpense('${expense.id}')">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+        });
+
+        document.getElementById("totalAmount").innerText = total;
+
+    }
+
+    async function addExpense(){
+
+        const expense = {
+
+            title: document.getElementById("title").value,
+            amount: parseFloat(document.getElementById("amount").value),
+            category: document.getElementById("category").value,
+            date: document.getElementById("date").value
+
+        };
+
+        await fetch(API_URL, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type":"application/json"
+            },
+
+            body: JSON.stringify(expense)
+
+        });
+
+        fetchExpenses();
+
+        document.getElementById("title").value = "";
+        document.getElementById("amount").value = "";
+        document.getElementById("category").value = "";
+        document.getElementById("date").value = "";
+
+    }
+
+    async function deleteExpense(id){
+
+        await fetch(`${API_URL}/${id}`, {
+            method:"DELETE"
+        });
+
+        fetchExpenses();
+
+    }
+
+    fetchExpenses();
+
+</script>
 
 </body>
 </html>
