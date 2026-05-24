@@ -3,27 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expense Tracker DevOps</title>
+    <title>Smart Expense Tracker</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
 
         body{
-            font-family: Arial, sans-serif;
-            background: #f4f7fc;
             margin:0;
             padding:0;
+            font-family: Arial, sans-serif;
+            background:#eef2f7;
         }
 
         .container{
-            width: 90%;
-            max-width: 1000px;
-            margin: 40px auto;
+            width:90%;
+            max-width:1200px;
+            margin:30px auto;
         }
 
         .title{
             text-align:center;
             color:#1e3c72;
             margin-bottom:30px;
+        }
+
+        .dashboard-cards{
+            display:flex;
+            gap:20px;
+            flex-wrap:wrap;
+            margin-bottom:20px;
+        }
+
+        .dashboard-card{
+            flex:1;
+            min-width:250px;
+            background:white;
+            padding:20px;
+            border-radius:12px;
+            box-shadow:0 4px 10px rgba(0,0,0,0.1);
+            text-align:center;
+        }
+
+        .dashboard-card h3{
+            color:#1e3c72;
+            margin-bottom:10px;
+        }
+
+        .dashboard-card p{
+            font-size:28px;
+            color:green;
+            font-weight:bold;
         }
 
         .card{
@@ -78,21 +108,38 @@
             background:red;
         }
 
-        .total-card{
-            text-align:center;
-            font-size:24px;
-            font-weight:bold;
-            color:green;
+        .delete-btn:hover{
+            background:darkred;
         }
 
     </style>
 
 </head>
+
 <body>
 
 <div class="container">
 
-    <h1 class="title">Expense Tracker DevOps Project</h1>
+    <h1 class="title">Smart Expense Tracker Dashboard</h1>
+
+    <div class="dashboard-cards">
+
+        <div class="dashboard-card">
+            <h3>Total Expenses</h3>
+            <p>₹ <span id="totalAmount">0</span></p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Total Categories</h3>
+            <p id="totalCategories">0</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Total Transactions</h3>
+            <p id="recentExpenses">0</p>
+        </div>
+
+    </div>
 
     <div class="card">
 
@@ -110,8 +157,12 @@
 
     </div>
 
-    <div class="card total-card">
-        Total Expense: ₹ <span id="totalAmount">0</span>
+    <div class="card">
+
+        <h2>Expense Analytics</h2>
+
+        <canvas id="expenseChart"></canvas>
+
     </div>
 
     <div class="card">
@@ -121,6 +172,7 @@
         <table>
 
             <thead>
+
             <tr>
                 <th>Title</th>
                 <th>Amount</th>
@@ -128,6 +180,7 @@
                 <th>Date</th>
                 <th>Action</th>
             </tr>
+
             </thead>
 
             <tbody id="expenseTable">
@@ -144,6 +197,8 @@
 
     const API_URL = "/api/expenses";
 
+    let chart;
+
     async function fetchExpenses(){
 
         const response = await fetch(API_URL);
@@ -156,9 +211,14 @@
 
         let total = 0;
 
+        let categories = {};
+
         expenses.forEach(expense => {
 
             total += expense.amount;
+
+            categories[expense.category] =
+                (categories[expense.category] || 0) + expense.amount;
 
             table.innerHTML += `
                 <tr>
@@ -167,7 +227,8 @@
                     <td>${expense.category}</td>
                     <td>${expense.date}</td>
                     <td>
-                        <button class="delete-btn" onclick="deleteExpense('${expense.id}')">
+                        <button class="delete-btn"
+                        onclick="deleteExpense('${expense.id}')">
                             Delete
                         </button>
                     </td>
@@ -177,6 +238,40 @@
         });
 
         document.getElementById("totalAmount").innerText = total;
+
+        document.getElementById("totalCategories").innerText =
+            Object.keys(categories).length;
+
+        document.getElementById("recentExpenses").innerText =
+            expenses.length;
+
+        updateChart(categories);
+
+    }
+
+    function updateChart(categories){
+
+        const ctx = document.getElementById("expenseChart");
+
+        if(chart){
+            chart.destroy();
+        }
+
+        chart = new Chart(ctx, {
+
+            type: 'pie',
+
+            data: {
+
+                labels: Object.keys(categories),
+
+                datasets: [{
+                    label: 'Expenses',
+                    data: Object.values(categories)
+                }]
+            }
+
+        });
 
     }
 
@@ -227,4 +322,5 @@
 </script>
 
 </body>
+
 </html>
