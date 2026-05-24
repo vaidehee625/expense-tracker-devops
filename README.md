@@ -38,3 +38,7 @@ DevOps and Monitoring
 - Grafana Dashboards
 - Authentication
 - Expense Analytics
+
+## CI/CD Pipeline
+
+GitHub → Jenkins → Docker → AWS EC2
