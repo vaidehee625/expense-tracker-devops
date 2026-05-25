@@ -17,4 +17,9 @@ public class ExpenseTrackerDevopsApplication {
     public String home() {
         return "index";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "index";
+    }
 }

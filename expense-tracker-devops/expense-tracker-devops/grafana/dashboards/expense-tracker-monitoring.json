@@ -1,0 +1,68 @@
+{
+  "id": null,
+  "uid": "expense-tracker-monitoring",
+  "title": "Expense Tracker JVM & CPU Monitoring",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "JVM Heap Used",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "jvm_memory_used_bytes{area=\"heap\"}",
+          "legendFormat": "used"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "JVM Heap Max",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "jvm_memory_max_bytes{area=\"heap\"}",
+          "legendFormat": "max"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Process CPU Usage",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "process_cpu_usage",
+          "legendFormat": "process CPU"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "System CPU Usage",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "system_cpu_usage",
+          "legendFormat": "system CPU"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP Requests Count",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum(http_server_requests_seconds_count) by (uri)",
+          "legendFormat": "{{uri}}"
+        }
+      ]
+    }
+  ],
+  "templating": { "list": [] },
+  "annotations": { "list": [] },
+  "refresh": "10s"
+}
