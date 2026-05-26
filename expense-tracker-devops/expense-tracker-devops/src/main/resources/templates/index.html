@@ -479,12 +479,27 @@
         }
 
         .btn-success {
-            background: var(--success);
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
         }
 
         .btn-success:hover {
-            background: #059669;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #d97706, #b45309);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
         }
 
         .btn-danger {
@@ -499,6 +514,35 @@
         .btn-sm {
             padding: 6px 12px;
             font-size: 12px;
+        }
+
+        .header-status {
+            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.08);
+            color: var(--text-primary);
+            border: 1px solid rgba(99, 102, 241, 0.18);
+            font-size: 14px;
+            max-width: fit-content;
+        }
+
+        .header-status.status-success {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: #065f46;
+        }
+
+        .header-status.status-warning {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.2);
+            color: #78350f;
+        }
+
+        .header-status.status-info {
+            background: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.2);
+            color: #1d4ed8;
         }
 
         /* ===== SUMMARY CARDS ===== */
@@ -1290,10 +1334,20 @@
                     <button class="btn btn-secondary" id="exportPDFBtn">
                         <i class="fas fa-file-pdf"></i> Export PDF
                     </button>
+                    <button class="btn btn-primary" id="jenkinsTriggerBtn">
+                        <i class="fas fa-network-wired"></i> Test Jenkins Trigger NEW
+                    </button>
+                    <button class="btn btn-success" id="ciCdDemoBtn">
+                        <i class="fas fa-rocket"></i> CI/CD Demo
+                    </button>
+                    <button class="btn btn-warning" id="monitoringBtn">
+                        <i class="fas fa-chart-line"></i> Monitoring
+                    </button>
                     <button class="btn btn-primary" id="addExpenseModalBtn">
                         <i class="fas fa-plus"></i> Add Expense
                     </button>
                 </div>
+                <div class="header-status" id="dashboardStatus">Ready to trigger Jenkins.</div>
             </div>
 
             <div class="filters-section">
@@ -1668,6 +1722,9 @@
             document.getElementById('exportCSVBtn').addEventListener('click', exportToCSV);
             document.getElementById('exportPDFBtn').addEventListener('click', exportToPDF);
             document.getElementById('exportReportCSV').addEventListener('click', exportToCSV);
+            document.getElementById('jenkinsTriggerBtn').addEventListener('click', triggerJenkins);
+            document.getElementById('ciCdDemoBtn').addEventListener('click', triggerCiCdDemo);
+            document.getElementById('monitoringBtn').addEventListener('click', openMonitoringPanel);
 
             // Profile
             document.getElementById('profileSection').addEventListener('click', toggleDropdown);
@@ -1752,6 +1809,28 @@
                 link.classList.remove('active');
             });
             activeLink.classList.add('active');
+        }
+
+        function setTriggerStatus(message, statusType = 'info') {
+            const status = document.getElementById('dashboardStatus');
+            status.textContent = message;
+            status.classList.remove('status-info', 'status-success', 'status-warning');
+            status.classList.add(`status-${statusType}`);
+        }
+
+        function triggerJenkins() {
+            showToast('Jenkins trigger initiated. Verify your Jenkins pipeline.', 'success');
+            setTriggerStatus('Jenkins trigger sent successfully', 'success');
+        }
+
+        function triggerCiCdDemo() {
+            showToast('CI/CD demo activated. Review your pipeline run.', 'success');
+            setTriggerStatus('CI/CD demo in progress', 'warning');
+        }
+
+        function openMonitoringPanel() {
+            showToast('Monitoring action activated. Open Grafana to review metrics.', 'info');
+            setTriggerStatus('Monitoring panel ready', 'info');
         }
 
         // ===== MODAL MANAGEMENT =====
